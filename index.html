@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="medias/favicon.ico" type="image/x-icon"/>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Lecteur de musique</title>
+</head>
+
+<body>
+    <div id="app">
+        <header>
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#" @click.prevent="changerPage('accueil')">
+                        <div class="logo"></div>
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item ms-5">
+                                <a class="nav-link active" aria-current="page" href="#"
+                                    @click.prevent="changerPage('accueil')">Accueil</a>
+                            </li>
+                            <li class="nav-item ms-5">
+                                <a class="nav-link" href="#" @click.prevent="changerPage('lecture_de_musique')">Lecture
+                                    de musique</a>
+                            </li>
+                        </ul>
+                        <form class="d-flex" role="search" v-if="page == 'lecture_de_musique'">
+                            <input class="form-control me-2 search" type="text" placeholder="Recherche"
+                                aria-label="Recherche" v-model="recherche_musique">
+                        </form>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <div class="container">
+            <main>
+                <div id="accueil" v-if="page == 'accueil'">
+                    <h1>Accueil</h1>
+                    <div>
+                        <a href="#" @click.prevent="changerPage('lecture_de_musique')">Voir votre lecture de musique
+                            personnalisée!</a>
+                    </div>
+                </div>
+
+                <div v-if="page == 'lecture_de_musique'">
+                    <div>
+                        <h1>Votre lecture de musique personnalisée!</h1>
+                    </div>
+                    <div class="liste_lecture">
+                        <ul class="list-group">
+                            <div v-for="chanson of liste.filter(filtrerMusique)">
+                                <li class="list-group-item d-flex justify-content-between mb-2 px-4 py-3 entree"
+                                    :class="{chanson_selectionner : chanson_active == chanson}"
+                                    @click="selectionnerChanson(chanson)">
+                                    <span class="w-25">{{ chanson.titre }}</span>
+                                    <span class="w-25">{{ chanson.artiste }}</span>
+                                    <span>{{ convertir(chanson.temps) }}</span>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+            </main>
+
+            <footer>
+                <div class="position-absolute bottom-0 start-0 d-flex justify-content-around align-items-center footer"
+                    v-if="page == 'lecture_de_musique' && chanson_active != ''">
+                    <section class="d-flex justify-self-center align-items-center">
+                        <img class="img-thumbnail couverture_album" :src="'chansons/' + chanson_active.image"
+                            alt="Couverture d'album">
+                        <div class="d-flex flex-column infos_chanson ms-4">
+                            <div class="titre">{{ chanson_active.titre }}</div>
+                            <div>{{ chanson_active.artiste }}</div>
+                        </div>
+                    </section>
+
+                    <section class="d-flex justify-self-center align-items-center">
+                        <div class="temps_progression">{{ convertir(temps_actuel) }}</div>
+                        <div class="barre mx-2">
+                            <div class="barre_progression" :style="{ width: pourcentage_progression + '%' }"></div>
+                        </div>
+                        <div>{{ convertir(chanson_active.temps) }}</div>
+                    </section>
+
+                    <section class="d-flex justify-self-center align-items-center">
+                        <div>
+                            <audio :src="'chansons/' + chanson_active.audio" ref="balise_audio"
+                                @timeupdate="progressionChanson(chanson_active.id)" autoplay></audio>
+                            <div class="me-5"
+                                :class="{ pause_chanson: en_lecture, jouer_chanson: en_lecture == false }"
+                                @click="en_lecture = !en_lecture; toggleLectureChanson()"></div>
+                        </div>
+                        <input class="justify-self-center form_range barre_volume m-0" type="range" min="0" max="1"
+                            step="0.01" v-model="barre_volume" @click="changerVolume()"
+                            :style="{ backgroundSize: barre_volume * 100 + '% 100%' }">
+                    </section>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+        crossorigin="anonymous"></script>
+    <script src="js/main.js" type="module"></script>
+</body>
+
+</html>
